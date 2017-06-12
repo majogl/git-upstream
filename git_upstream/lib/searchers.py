@@ -703,6 +703,23 @@ class DroppedCommitFilter(LogDedentMixin, CommitFilter):
                 self.log.debug("Dropping commit '%s' as requested:", commit)
                 self.log.debug(commit_note)
 
+class FrinxExclusionFilter(LogDedentMixin, CommitFilter):
+    """
+    Excludes commits that have note <VERSION> in namespace
+    refs/notes/drop-string
+    """
+
+    def filter(self, commit_iter):
+        for commit in commit_iter:
+            commit_note = commit.note(note_ref=lib.FRINX_NOTE_REF)
+            if not commit_note:
+                yield commit
+            elif not re.match('^%s.+' % lib.DROP_HEADER,
+                              commit_note, re.IGNORECASE | re.MULTILINE):
+                yield commit
+            else:
+                self.log.debug("Dropping commit '%s' as requested:", commit)
+                self.log.debug(commit_note)
 
 class MergeCommitFilter(CommitFilter):
     """

@@ -23,6 +23,7 @@ from collections import Sequence
 from git_upstream.lib.searchers import DiscardDuplicateGerritChangeId
 from git_upstream.lib.searchers import DroppedCommitFilter
 from git_upstream.lib.searchers import NoMergeCommitFilter
+from git_upstream.lib.searchers import FrinxExclusionFilter
 from git_upstream.lib.searchers import ReverseCommitFilter
 from git_upstream.lib.searchers import SupersededCommitFilter
 from git_upstream.lib.searchers import UpstreamMergeBaseSearcher
@@ -100,6 +101,46 @@ class LocateChangesStrategy(GitMixin, Sequence):
     def _popdata(self):
         """Should return the list of commits from the searcher object"""
         return self.searcher.list(upstream=self.upstream)
+
+class FrinxStrategy(LocateChangesStrategy):
+
+    _strategy = "FRINX"
+
+    def __init__(self, branch="HEAD", upstream="upstream/master",
+                 search_refs=None, *args, **kwargs):
+
+        if not search_refs:
+            search_refs = []
+        search_refs.insert(0, upstream)
+        self.upstream = upstream
+
+        super(FrinxStrategy, self).__init__(*args, **kwargs)
+
+        self.searcher = UpstreamMergeBaseSearcher(
+            branch=branch, patterns=search_refs, search_tags=True)
+
+    @property
+    def previous_upstream(self):
+        if not self.searcher.commit:
+            self.searcher.find()
+
+        return self.searcher.commit
+
+    def filtered_iter(self):
+        # may wish to make class used to remove duplicate objects configurable
+        # through git-upstream specific 'git config' settings
+        self.filters.append(
+            DiscardDuplicateGerritChangeId(self.upstream,
+                                           limit=self.previous_upstream))
+        self.filters.append(NoMergeCommitFilter())
+        self.filters.append(ReverseCommitFilter())
+        self.filters.append(DroppedCommitFilter())
+        self.filters.append(FrinxExclusionFilter())
+        self.filters.append(
+            SupersededCommitFilter(self.upstream,
+                                   limit=self.previous_upstream))
+
+        return super(FrinxStrategy, self).filtered_iter()
 
 
 class LocateChangesWalk(LocateChangesStrategy):

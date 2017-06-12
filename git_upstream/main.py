@@ -39,7 +39,6 @@ try:
 except ImportError:
     argparse_loaded = False
 
-
 def build_parsers():
     parser = argparse.ArgumentParser(
         prog='git-upstream',

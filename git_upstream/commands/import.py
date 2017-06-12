@@ -19,7 +19,7 @@ from git_upstream.commands import GitUpstreamCommand
 from git_upstream.lib.importupstream import ImportUpstream
 from git_upstream.lib.importupstream import ImportUpstreamError
 from git_upstream.lib.strategies import ImportStrategiesFactory
-from git_upstream.lib.strategies import LocateChangesWalk
+from git_upstream.lib.strategies import LocateChangesWalk, FrinxStrategy
 from git_upstream.log import LogDedentMixin
 
 
@@ -81,7 +81,7 @@ class ImportCommand(LogDedentMixin, GitUpstreamCommand):
         self.parser.add_argument(
             '-s', '--strategy', metavar='<strategy>',
             choices=ImportStrategiesFactory.list_strategies(),
-            default=LocateChangesWalk.get_strategy_name(),
+            default=FrinxStrategy.get_strategy_name(),
             help='Use the given strategy to re-apply locally carried '
                  'changes to the import branch. (default: %(default)s)')
         self.parser.add_argument(
