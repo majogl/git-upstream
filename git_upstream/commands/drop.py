@@ -39,10 +39,13 @@ class DropCommand(LogDedentMixin, GitUpstreamCommand):
         self.parser.add_argument(
             '-a', '--author', metavar='<author>', dest='author', default=None,
             help='Git author for the mark')
+        self.parser.add_argument(
+            '-f', '--frinx', dest='frinx', action='store_true', default=False,
+            help='Frinx mark type (used with the FRINX strategy)')
 
     def execute(self):
 
-        drop = Drop(git_object=self.args.commit, author=self.args.author)
+        drop = Drop(git_object=self.args.commit, author=self.args.author, frinx= self.args.frinx)
 
         if drop.mark():
             self.log.notice("Drop mark created successfully")

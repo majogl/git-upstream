@@ -712,10 +712,10 @@ class FrinxExclusionFilter(LogDedentMixin, CommitFilter):
     def filter(self, commit_iter):
         for commit in commit_iter:
             commit_note = commit.note(note_ref=lib.FRINX_NOTE_REF)
+            print(commit_note)
             if not commit_note:
                 yield commit
-            elif not re.match('^%s.+' % lib.DROP_HEADER,
-                              commit_note, re.IGNORECASE | re.MULTILINE):
+            elif not lib.FRINX_DROP_HEADER in commit_note:
                 yield commit
             else:
                 self.log.debug("Dropping commit '%s' as requested:", commit)

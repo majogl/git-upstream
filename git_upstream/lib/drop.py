@@ -45,7 +45,7 @@ class Drop(LogDedentMixin, GitMixin):
 
     """
 
-    def __init__(self, git_object=None, author=None, *args, **kwargs):
+    def __init__(self, git_object=None, author=None, frinx=False, *args, **kwargs):
 
         # make sure to correctly initialize inherited objects before performing
         # any computation
@@ -75,6 +75,8 @@ class Drop(LogDedentMixin, GitMixin):
         # To Do: check if it possible and useful.
         if self.repo.bare:
             raise DropError("Cannot add notes in bare repositories")
+
+        self.frinx = frinx
 
     @property
     def commit(self):
@@ -109,7 +111,10 @@ class Drop(LogDedentMixin, GitMixin):
             git_note = '%s %s\n' % (lib.DROP_HEADER, self.author)
             self.log.debug('With the following content:')
             self.log.debug(git_note)
-            self.commit.append_note(git_note, note_ref=lib.IMPORT_NOTE_REF)
+            if self.frinx:
+                self.commit.append_note(lib.FRINX_DROP_HEADER, note_ref=lib.FRINX_NOTE_REF)
+            else:
+                self.commit.append_note(git_note, note_ref=lib.IMPORT_NOTE_REF)
         else:
             self.log.warning(
                 "Drop note has not been added as '%s' already has one" %

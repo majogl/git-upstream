@@ -18,10 +18,13 @@ import os
 IMPORT_NOTE_REF = 'refs/notes/upstream-merge'
 SUPERSEDE_HEADER = 'Superseded-by:'
 DROP_HEADER = 'Dropped:'
-FRINX_NOTE_REF = 'refs/notes/drop-string'
+FRINX_NOTE_REF = 'refs/notes/frinx-drop'
+FRINX_DROP_HEADER = "exclude"
+"""
 if 'DROP_STRING' in os.environ:
 	FRINX_DROP_HEADER = os.environ['DROP_STRING']
 else:
 	print("Enviromental variavle <DROP_STRING> unset! Default 'FRINX' \
 drop string used instead")
 	FRINX_DROP_HEADER = "FRINX"
+"""

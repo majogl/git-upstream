@@ -102,6 +102,46 @@ class LocateChangesStrategy(GitMixin, Sequence):
         """Should return the list of commits from the searcher object"""
         return self.searcher.list(upstream=self.upstream)
 
+
+class LocateChangesWalk(LocateChangesStrategy):
+
+    _strategy = "drop"
+
+    def __init__(self, branch="HEAD", upstream="upstream/master",
+                 search_refs=None, *args, **kwargs):
+
+        if not search_refs:
+            search_refs = []
+        search_refs.insert(0, upstream)
+        self.upstream = upstream
+
+        super(LocateChangesWalk, self).__init__(*args, **kwargs)
+
+        self.searcher = UpstreamMergeBaseSearcher(
+            branch=branch, patterns=search_refs, search_tags=True)
+
+    @property
+    def previous_upstream(self):
+        if not self.searcher.commit:
+            self.searcher.find()
+
+        return self.searcher.commit
+
+    def filtered_iter(self):
+        # may wish to make class used to remove duplicate objects configurable
+        # through git-upstream specific 'git config' settings
+        self.filters.append(
+            DiscardDuplicateGerritChangeId(self.upstream,
+                                           limit=self.previous_upstream))
+        self.filters.append(NoMergeCommitFilter())
+        self.filters.append(ReverseCommitFilter())
+        self.filters.append(DroppedCommitFilter())
+        self.filters.append(
+            SupersededCommitFilter(self.upstream,
+                                   limit=self.previous_upstream))
+
+        return super(LocateChangesWalk, self).filtered_iter()
+
 class FrinxStrategy(LocateChangesStrategy):
 
     _strategy = "FRINX"
@@ -142,42 +182,3 @@ class FrinxStrategy(LocateChangesStrategy):
 
         return super(FrinxStrategy, self).filtered_iter()
 
-
-class LocateChangesWalk(LocateChangesStrategy):
-
-    _strategy = "drop"
-
-    def __init__(self, branch="HEAD", upstream="upstream/master",
-                 search_refs=None, *args, **kwargs):
-
-        if not search_refs:
-            search_refs = []
-        search_refs.insert(0, upstream)
-        self.upstream = upstream
-
-        super(LocateChangesWalk, self).__init__(*args, **kwargs)
-
-        self.searcher = UpstreamMergeBaseSearcher(
-            branch=branch, patterns=search_refs, search_tags=True)
-
-    @property
-    def previous_upstream(self):
-        if not self.searcher.commit:
-            self.searcher.find()
-
-        return self.searcher.commit
-
-    def filtered_iter(self):
-        # may wish to make class used to remove duplicate objects configurable
-        # through git-upstream specific 'git config' settings
-        self.filters.append(
-            DiscardDuplicateGerritChangeId(self.upstream,
-                                           limit=self.previous_upstream))
-        self.filters.append(NoMergeCommitFilter())
-        self.filters.append(ReverseCommitFilter())
-        self.filters.append(DroppedCommitFilter())
-        self.filters.append(
-            SupersededCommitFilter(self.upstream,
-                                   limit=self.previous_upstream))
-
-        return super(LocateChangesWalk, self).filtered_iter()
