@@ -42,12 +42,19 @@ class DropCommand(LogDedentMixin, GitUpstreamCommand):
         self.parser.add_argument(
             '-f', '--frinx', dest='frinx', action='store_true', default=False,
             help='Frinx mark type (used with the FRINX strategy)')
+        self.parser.add_argument(
+            '-r', '--revert', dest='rev', action='store_true', default=False,
+            help='Will remove the drop mark. If -f is active, will remove \
+            frinx drop mark as instead')
 
     def execute(self):
 
-        drop = Drop(git_object=self.args.commit, author=self.args.author, frinx= self.args.frinx)
-
-        if drop.mark():
-            self.log.notice("Drop mark created successfully")
+        drop = Drop(git_object=self.args.commit, author=self.args.author,
+                    frinx= self.args.frinx, rev = self.args.rev)
+        if drop.rev:
+            drop.unmark()
+        else:
+            if drop.mark():
+                self.log.notice("Drop mark created successfully")
 
 # vim:sw=4:sts=4:ts=4:et:

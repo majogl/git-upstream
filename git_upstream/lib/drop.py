@@ -16,6 +16,7 @@
 #
 
 import re
+import os
 
 from git import BadObject
 
@@ -45,7 +46,7 @@ class Drop(LogDedentMixin, GitMixin):
 
     """
 
-    def __init__(self, git_object=None, author=None, frinx=False, *args, **kwargs):
+    def __init__(self, git_object=None, author=None, frinx=False, rev=False, *args, **kwargs):
 
         # make sure to correctly initialize inherited objects before performing
         # any computation
@@ -76,7 +77,8 @@ class Drop(LogDedentMixin, GitMixin):
         if self.repo.bare:
             raise DropError("Cannot add notes in bare repositories")
 
-        self.frinx = frinx
+        self.frinx,self.rev = frinx,rev
+        self.commit_id = git_object
 
     @property
     def commit(self):
@@ -119,3 +121,10 @@ class Drop(LogDedentMixin, GitMixin):
             self.log.warning(
                 "Drop note has not been added as '%s' already has one" %
                 self.commit)
+
+    def unmark(self):
+		if self.frinx:
+			os.system('git notes --ref {} remove {}'.format(lib.FRINX_NOTE_REF,self.commit_id))
+		else:
+			os.system('git notes --ref {} remove {}'.format(lib.IMPORT_NOTE_REF,self.commit_id))
+		
