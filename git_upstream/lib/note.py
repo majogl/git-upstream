@@ -63,6 +63,7 @@ def note_message(self, note_ref='refs/notes/commits'):
     try:
         return self.repo.git.notes('--ref', note_ref, 'show', str(self))
     except GitCommandError as e:
+        print('Note in this namespace already exists')
         if e.status == 1:
             return None
         else:

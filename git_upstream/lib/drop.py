@@ -96,7 +96,7 @@ class Drop(LogDedentMixin, GitMixin):
         if note:
             pattern = '^%s\s*(.+)' % lib.DROP_HEADER
             m = re.search(pattern, note, re.MULTILINE | re.IGNORECASE)
-            if m or lib.ALT_DROP_HEADER in note:
+            if m:
                 self.log.warning(
                     """Drop header already present in the note for commit '%s':
                        %s""" % (self.commit, m.group(1)))
@@ -114,7 +114,7 @@ class Drop(LogDedentMixin, GitMixin):
             self.log.debug('With the following content:')
             self.log.debug(git_note)
             if self.alt:
-                self.commit.append_note('%s \n' % lib.ALT_DROP_HEADER, note_ref=lib.ALT_NOTE_REF)
+                self.commit.add_note('%s \n' % lib.ALT_DROP_HEADER, note_ref=lib.ALT_NOTE_REF)
             else:
                 self.commit.append_note(git_note, note_ref=lib.IMPORT_NOTE_REF)
         else:
