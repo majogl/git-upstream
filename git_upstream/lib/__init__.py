@@ -18,8 +18,8 @@ import os
 IMPORT_NOTE_REF = 'refs/notes/upstream-merge'
 SUPERSEDE_HEADER = 'Superseded-by:'
 DROP_HEADER = 'Dropped:'
-FRINX_NOTE_REF = 'refs/notes/alt-drop'
-FRINX_DROP_HEADER = "exclude"
+ALT_NOTE_REF = 'refs/notes/alt-drop'
+ALT_DROP_HEADER = "exclude"
 """
 if 'DROP_STRING' in os.environ:
 	FRINX_DROP_HEADER = os.environ['DROP_STRING']

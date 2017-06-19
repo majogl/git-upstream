@@ -50,7 +50,7 @@ class DropCommand(LogDedentMixin, GitUpstreamCommand):
     def execute(self):
 
         drop = Drop(git_object=self.args.commit, author=self.args.author,
-                    frinx= self.args.frinx, rev = self.args.rev)
+                    alt= self.args.alt, rev = self.args.rev)
         if drop.rev:
             drop.unmark()
         else:

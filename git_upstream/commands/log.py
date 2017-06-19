@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
+from __future__ import print_function
 from git_upstream import lib
 from git_upstream.commands import GitUpstreamCommand
 from git_upstream.log import LogDedentMixin
@@ -24,7 +24,7 @@ import subprocess
 
 class Log(LogDedentMixin, GitMixin):
 
-    pretty = 'format:%C(yellow)%h%Creset|%Cgreen%ad%Creset|%Cred%<(5,trunc)%N%-%Creset|%Cblue%an%Cgreen%d%x09%Creset%s'
+    pretty = 'format:%C(yellow)%h%Creset|%Cgreen%ad%Creset|%Cred%><(6,trunc)%N%-%Creset|%Cblue%an%Cgreen%d%x09%Creset%s'
 
     def __init__(self, log_command, *args, **kwargs):
 
@@ -34,10 +34,13 @@ class Log(LogDedentMixin, GitMixin):
         self.log_command = log_command
 
     def show(self):
-        args = ["git", "log", "--graph", "--format=" + self.pretty, "--notes=*", "--date=short"]
-        # TODO: replace with git_upstream.log ?
-        subprocess.call(args + self.log_command)
-        #TODO: replace("Dropp..>", "Dropped")
+		args = ["git", "log", "--pretty=" + self.pretty, "--show-notes=*", "--date=short"]
+		# TODO: replace with git_upstream.log ?
+		proc = subprocess.Popen(args + self.log_command,stdout=subprocess.PIPE)
+		for line in proc.stdout:
+			print(line,end='')
+		print('\n')
+		#TODO: replace("Dropp..>", "Dropped")
 
 
 class LogCommand(LogDedentMixin, GitUpstreamCommand):

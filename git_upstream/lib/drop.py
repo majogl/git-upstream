@@ -46,7 +46,7 @@ class Drop(LogDedentMixin, GitMixin):
 
     """
 
-    def __init__(self, git_object=None, author=None, frinx=False, rev=False, *args, **kwargs):
+    def __init__(self, git_object=None, author=None, alt=False, rev=False, *args, **kwargs):
 
         # make sure to correctly initialize inherited objects before performing
         # any computation
@@ -77,7 +77,7 @@ class Drop(LogDedentMixin, GitMixin):
         if self.repo.bare:
             raise DropError("Cannot add notes in bare repositories")
 
-        self.frinx,self.rev = frinx,rev
+        self.alt,self.rev = alt,rev
         self.commit_id = git_object
 
     @property
@@ -96,7 +96,7 @@ class Drop(LogDedentMixin, GitMixin):
         if note:
             pattern = '^%s\s*(.+)' % lib.DROP_HEADER
             m = re.search(pattern, note, re.MULTILINE | re.IGNORECASE)
-            if m:
+            if m or lib.ALT_DROP_HEADER in note:
                 self.log.warning(
                     """Drop header already present in the note for commit '%s':
                        %s""" % (self.commit, m.group(1)))
@@ -114,7 +114,7 @@ class Drop(LogDedentMixin, GitMixin):
             self.log.debug('With the following content:')
             self.log.debug(git_note)
             if self.alt:
-                self.commit.append_note('%s' % lib.FRINX_DROP_HEADER, note_ref=lib.FRINX_NOTE_REF)
+                self.commit.append_note('%s \n' % lib.ALT_DROP_HEADER, note_ref=lib.ALT_NOTE_REF)
             else:
                 self.commit.append_note(git_note, note_ref=lib.IMPORT_NOTE_REF)
         else:
@@ -124,7 +124,7 @@ class Drop(LogDedentMixin, GitMixin):
 
     def unmark(self):
 		if self.alt:
-			os.system('git notes --ref {} remove {}'.format(lib.FRINX_NOTE_REF,self.commit_id))
+			os.system('git notes --ref {} remove {}'.format(lib.ALT_NOTE_REF,self.commit_id))
 		else:
 			os.system('git notes --ref {} remove {}'.format(lib.IMPORT_NOTE_REF,self.commit_id))
 		

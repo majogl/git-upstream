@@ -154,7 +154,7 @@ class AltStrategy(LocateChangesStrategy):
         search_refs.insert(0, upstream)
         self.upstream = upstream
 
-        super(FrinxStrategy, self).__init__(*args, **kwargs)
+        super(AltStrategy, self).__init__(*args, **kwargs)
 
         self.searcher = UpstreamMergeBaseSearcher(
             branch=branch, patterns=search_refs, search_tags=True)
@@ -180,5 +180,5 @@ class AltStrategy(LocateChangesStrategy):
             SupersededCommitFilter(self.upstream,
                                    limit=self.previous_upstream))
 
-        return super(FrinxStrategy, self).filtered_iter()
+        return super(AltStrategy, self).filtered_iter()
 
