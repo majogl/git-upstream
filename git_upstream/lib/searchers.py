@@ -703,7 +703,7 @@ class DroppedCommitFilter(LogDedentMixin, CommitFilter):
                 self.log.debug("Dropping commit '%s' as requested:", commit)
                 self.log.debug(commit_note)
 
-class FrinxExclusionFilter(LogDedentMixin, CommitFilter):
+class AltExclusionFilter(LogDedentMixin, CommitFilter):
     """
     Excludes commits that have note <VERSION> in namespace
     refs/notes/drop-string

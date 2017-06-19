@@ -40,12 +40,12 @@ class DropCommand(LogDedentMixin, GitUpstreamCommand):
             '-a', '--author', metavar='<author>', dest='author', default=None,
             help='Git author for the mark')
         self.parser.add_argument(
-            '-f', '--frinx', dest='frinx', action='store_true', default=False,
-            help='Frinx mark type (used with the FRINX strategy)')
+            '--alt', dest='alt', action='store_true', default=False,
+            help='Alternative mark type (used with the "alt" strategy)')
         self.parser.add_argument(
             '-r', '--revert', dest='rev', action='store_true', default=False,
-            help='Will remove the drop mark. If -f is active, will remove \
-            frinx drop mark as instead')
+            help='Will remove the drop mark. If --alt is active, will remove \
+            the alternatuve drop mark as instead')
 
     def execute(self):
 

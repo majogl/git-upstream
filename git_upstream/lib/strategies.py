@@ -23,7 +23,7 @@ from collections import Sequence
 from git_upstream.lib.searchers import DiscardDuplicateGerritChangeId
 from git_upstream.lib.searchers import DroppedCommitFilter
 from git_upstream.lib.searchers import NoMergeCommitFilter
-from git_upstream.lib.searchers import FrinxExclusionFilter
+from git_upstream.lib.searchers import AltExclusionFilter
 from git_upstream.lib.searchers import ReverseCommitFilter
 from git_upstream.lib.searchers import SupersededCommitFilter
 from git_upstream.lib.searchers import UpstreamMergeBaseSearcher
@@ -142,9 +142,9 @@ class LocateChangesWalk(LocateChangesStrategy):
 
         return super(LocateChangesWalk, self).filtered_iter()
 
-class FrinxStrategy(LocateChangesStrategy):
+class AltStrategy(LocateChangesStrategy):
 
-    _strategy = "FRINX"
+    _strategy = "alt"
 
     def __init__(self, branch="HEAD", upstream="upstream/master",
                  search_refs=None, *args, **kwargs):
@@ -175,7 +175,7 @@ class FrinxStrategy(LocateChangesStrategy):
         self.filters.append(NoMergeCommitFilter())
         self.filters.append(ReverseCommitFilter())
         self.filters.append(DroppedCommitFilter())
-        self.filters.append(FrinxExclusionFilter())
+        self.filters.append(AltExclusionFilter())
         self.filters.append(
             SupersededCommitFilter(self.upstream,
                                    limit=self.previous_upstream))

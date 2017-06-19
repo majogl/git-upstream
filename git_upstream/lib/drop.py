@@ -113,8 +113,8 @@ class Drop(LogDedentMixin, GitMixin):
             git_note = '%s %s\n' % (lib.DROP_HEADER, self.author)
             self.log.debug('With the following content:')
             self.log.debug(git_note)
-            if self.frinx:
-                self.commit.append_note(lib.FRINX_DROP_HEADER, note_ref=lib.FRINX_NOTE_REF)
+            if self.alt:
+                self.commit.append_note('%s' % lib.FRINX_DROP_HEADER, note_ref=lib.FRINX_NOTE_REF)
             else:
                 self.commit.append_note(git_note, note_ref=lib.IMPORT_NOTE_REF)
         else:
@@ -123,7 +123,7 @@ class Drop(LogDedentMixin, GitMixin):
                 self.commit)
 
     def unmark(self):
-		if self.frinx:
+		if self.alt:
 			os.system('git notes --ref {} remove {}'.format(lib.FRINX_NOTE_REF,self.commit_id))
 		else:
 			os.system('git notes --ref {} remove {}'.format(lib.IMPORT_NOTE_REF,self.commit_id))
